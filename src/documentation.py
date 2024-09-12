@@ -291,15 +291,26 @@ async def analyze_documentation(file_path):
 
 
     # Enviar o PDF na sessão de chat
-    raw_response_overview = chat_session.send_message(f"Produza o documento 'Overview' da documentação do software anexado {pdf_file}")
-    raw_response_módulo_e_casos_de__teste = chat_session.send_message(f"Produza o documento 'Módulos e Casos de Teste' da documentação do software anexo {pdf_file}")
-    # raw_response_módulo_e_casos_de__teste_ = chat_session.send_message(f"Produza o documento 'Módulos e Casos de Teste' da documentação do software anexo {pdf_file}")
-    # raw_response_módulo_e_casos_de__teste_ = chat_session.send_message(f"Produza o documento 'Módulos e Casos de Teste' da documentação do software anexo {pdf_file}")
-    # raw_response_módulo_e_casos_de__teste_ = chat_session.send_message(f"Produza o documento 'Módulos e Casos de Teste' da documentação do software anexo {pdf_file}")
-    raw_response = raw_response_overview.text + raw_response
+    text_result = ''
+    text_result += chat_session.send_message(f"Produza o documento 'Overview' da documentação do software anexado {pdf_file}, em markdown")
+    text_result += '\n'
+    raw_response_módulo_e_casos_de_teste = chat_session.send_message(f"Produza o documento 'Módulos e Casos de Teste' da documentação do software anexo {pdf_file}, no formato JSON")
+    response_modules = json.loads(raw_response_módulo_e_casos_de_teste.text)
+    for module in response_modules:
+        text_result += chat_session.send_message(f"Descreva brevemente as informações do módulo {module} da documentação do software anexo {pdf_file}, em markdown")
+        text_result += '\n'
+        for ct in module:
+            text_result += chat_session.send_message(f"Produza o documento 'Especificidade do Caso de Teste' {ct.name} software anexado no arquivo {pdf_file}, em markdown")
+            text_result += '\n'
     
-    response = json.loads(raw_response.text)
-    return response
+    text_result += chat_session.send_message(f"Produza o documento 'Quantificação Total' da documentação do software anexo {pdf_file}, em markdown")
+    text_result += '\n'
+    text_result += chat_session.send_message(f"Produza o documento 'Quantificação por criticidade' da documentação do software anexo {pdf_file}, em markdown")
+    text_result += '\n'
+    # transform text markdown on PDF
+    # return PDF file
+    # response = json.loads(raw_response.text)
+    # return response
 
 
 # response = chat_session.send_message("INSERT_INPUT_HERE")
